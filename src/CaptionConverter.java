@@ -9,6 +9,26 @@ import java.util.Scanner;
 
 
 public class CaptionConverter {
+	
+//	public static void main(String[] args){
+//		CaptionConverter cc = new CaptionConverter();
+//		String filename = "captionTest.srt";
+//		StringBuffer sb = new StringBuffer();
+//		try{
+//			Scanner sc = new Scanner(new File(filename));
+//			while(sc.hasNextLine()){
+//				sb.append(sc.nextLine());
+//				sb.append("\n");
+//			}
+//			String block = sb.toString();
+//			System.out.println(block);
+//			CaptionBlock cb = cc.createCaptionBlock(block);
+//			System.out.println(cb.getCaption());
+//		}catch(Exception e){
+//			e.printStackTrace();
+//		}
+//		
+//	}
 
 	public void getCaptionsAsText(String filename){
 		try {
@@ -37,6 +57,7 @@ public class CaptionConverter {
 				//when line.length == 0, create new CaptionBlock
 				while(line.length() != 0){
 					sb.append(fileScanner.nextLine());
+					sb.append("\n");
 				}
 				captionBlocks.add(createCaptionBlock(sb.toString()));
 				fileScanner.nextLine(); //throw away the empty line
@@ -54,10 +75,22 @@ public class CaptionConverter {
 		String time;
 		Scanner blockScanner = new Scanner(block);
 		
+		number = blockScanner.nextInt();
+		blockScanner.nextLine();
+		time = blockScanner.nextLine();
 		
+		StringBuffer sb = new StringBuffer();
 		while(blockScanner.hasNextLine()){
-			
+			sb.append(blockScanner.nextLine());
+			sb.append(" ");
 		}
+		text = sb.toString();
+		
+		if(text.charAt(0) == '>'){ //specific to my .srt files, each sentence starts with ">> ", this removes it
+			text = text.substring(3);
+		}
+		
+		return new CaptionBlock(text, number, time);
 		
 	}
 	

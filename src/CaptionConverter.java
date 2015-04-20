@@ -15,7 +15,10 @@ public class CaptionConverter {
 	
 	public static void main(String[] args){
 		CaptionConverter cc;
-		if(args[0].equals("-help"))
+		
+		if(args.length < 1)
+			throw new IllegalArgumentException("Too few arguments.");
+		else if(args[0].equals("-help"))
 			printHelp();
 		if(!checkFileExtension(args[0])) //check to see if args[0] is a .srt
 			throw new IllegalArgumentException("File must be a .srt in the correct format. See http://en.wikipedia.org/wiki/SubRip for format examples.");
@@ -46,8 +49,14 @@ public class CaptionConverter {
             File file = new File(targetFilename);
             BufferedWriter output = new BufferedWriter(new FileWriter(file));
             ArrayList<CaptionBlock> captionBlocks = convertCaptionsIntoBlocks(fileName);
-            for(CaptionBlock cb : captionBlocks)
-            	output.write(cb.getCaption());
+            if(printTimes)
+            	for(CaptionBlock cb : captionBlocks)
+            		output.write(cb.toString());
+            else
+            	for(CaptionBlock cb : captionBlocks){
+            		output.write(cb.getCaption());
+            		output.newLine();	
+            	}
             output.close();
         } catch ( IOException e ) {
             e.printStackTrace();
@@ -101,8 +110,8 @@ public class CaptionConverter {
 		}
 		text = sb.toString();
 		
-		if(text.length() > 0 && text.charAt(0) == '>'){ //specific to my .srt files, each sentence starts with ">> ", this removes it
-			text = text.substring(3);
+		if(text.contains(">")){ //specific to my .srt files, each sentence starts with ">> "
+			sb.insert(sb.indexOf(">"), "\n\n");
 		}
 		
 		return new CaptionBlock(text, number, time);

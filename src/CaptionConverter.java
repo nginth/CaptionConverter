@@ -18,24 +18,25 @@ public class CaptionConverter {
 		
 		if(args.length < 1)
 			throw new IllegalArgumentException("Too few arguments.");
-		else if(args[0].equals("-help"))
+		else if(args[0].equals("-help")){
 			printHelp();
-		if(!checkFileExtension(args[0])) //check to see if args[0] is a .srt
+			return;
+		}
+		else if(!checkFileExtension(args[0])) //check to see if args[0] is a .srt
 			throw new IllegalArgumentException("File must be a .srt in the correct format. See http://en.wikipedia.org/wiki/SubRip for format examples.");
 		else if(args.length == 3){ //has a third argument that may or may not be -t
 			if(!args[2].equals("-t"))
 				throw new IllegalArgumentException("-help for all arguments");
-			else{
+			else
 				cc = new CaptionConverter(args[0], args[1], true);
-			}
 		}
-		else if(args.length == 2){
-			cc = new CaptionConverter(args[0], args[1], false);
-		}
+		else if(args.length > 3)
+			throw new IllegalArgumentException("Too many arguments.");
 		else
-			throw new IllegalArgumentException("Too few or too many arguments.");
+			cc = new CaptionConverter(args[0], args[1], false);
 		
 		cc.getCaptionsAsText();
+		
 	}
 	
 	public CaptionConverter(String fileName, String targetFilename, boolean printTimes){
@@ -50,8 +51,10 @@ public class CaptionConverter {
             BufferedWriter output = new BufferedWriter(new FileWriter(file));
             ArrayList<CaptionBlock> captionBlocks = convertCaptionsIntoBlocks(fileName);
             if(printTimes)
-            	for(CaptionBlock cb : captionBlocks)
+            	for(CaptionBlock cb : captionBlocks){
             		output.write(cb.toString());
+            		output.newLine();
+            	}
             else
             	for(CaptionBlock cb : captionBlocks){
             		output.write(cb.getCaption());
@@ -127,7 +130,7 @@ public class CaptionConverter {
 		System.out.println("CaptionConverter converts .srt subtitle files to a more readable format.");
 		System.out.println();
 		System.out.println("How to use:");
-		System.out.println("CaptionConverter.java [<fileName>.srt] [<targetFileName>.txt]");
+		System.out.println("java CaptionConverter [<fileName>.srt] [<targetFileName>.txt] -<args>");
 		System.out.println("Where <fileName>.srt is the file containing the captions "
 				+ "and <targetFileName>.txt is the file to which you would like the output to be written to.");
 		System.out.println("If <targetFileName>.txt does not exist it will be created. If it does exist it will be overwritten!");
